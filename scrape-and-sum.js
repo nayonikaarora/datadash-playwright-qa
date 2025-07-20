@@ -20,6 +20,8 @@ const urls = [
 
   for (const url of urls) {
     await page.goto(url);
+    await page.waitForSelector('table'); // Ensure the table is loaded
+
     const numbers = await page.$$eval('table td', tds =>
       tds.map(td => parseFloat(td.textContent)).filter(n => !isNaN(n))
     );
