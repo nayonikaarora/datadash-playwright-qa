@@ -1,33 +1,45 @@
-const { chromium } = require('playwright');
+import asyncio
+import re
+from playwright.async_api import async_playwright
 
-const urls = [
-  'https://sanand0.github.io/tdsdata/js_table/?seed=80',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=81',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=82',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=83',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=84',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=85',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=86',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=87',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=88',
-  'https://sanand0.github.io/tdsdata/js_table/?seed=89',
-];
+# Paste your seeds here as copied from the exam
+SEED_INPUT = """
+Seed 75
+Seed 76
+Seed 77
+Seed 78
+Seed 79
+Seed 80
+Seed 81
+Seed 82
+Seed 83
+Seed 84
+"""
 
-(async () => {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  let total = 0;
+SEEDS = re.findall(r"\d+", SEED_INPUT)
+BASE_URL = "https://sanand0.github.io/tdsdata/js_table/?seed={}"
 
-  for (const url of urls) {
-    await page.goto(url);
-    await page.waitForSelector('table'); // Ensure the table is loaded
+async def main():
+    total_sum = 0
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
 
-    const numbers = await page.$$eval('table td', tds =>
-      tds.map(td => parseFloat(td.textContent)).filter(n => !isNaN(n))
-    );
-    total += numbers.reduce((sum, num) => sum + num, 0);
-  }
+        for seed in SEEDS:
+            url = BASE_URL.format(seed)
+            await page.goto(url)
+            print(f"Scraping: {url}")
 
-  console.log(⁠ TOTAL SUM: ${total} ⁠);
-  await browser.close();
-})();
+            cells = await page.locator("table td").all_inner_texts()
+            for val in cells:
+                try:
+                    total_sum += float(val.strip())
+                except ValueError:
+                    continue
+
+        await browser.close()
+
+    print(f"\nTotal Sum: {total_sum:.2f}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
