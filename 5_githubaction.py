@@ -4,16 +4,16 @@ from playwright.async_api import async_playwright
 
 # Paste your seeds here as copied from the exam
 SEED_INPUT = """
-Seed 75
-Seed 76
-Seed 77
-Seed 78
-Seed 79
 Seed 80
 Seed 81
 Seed 82
 Seed 83
 Seed 84
+Seed 85
+Seed 86
+Seed 87
+Seed 88
+Seed 89
 """
 
 SEEDS = re.findall(r"\d+", SEED_INPUT)
